@@ -1,5 +1,20 @@
 <html>
+<head>   
+	<title>BLFM Test</title>
+	                                                     
+	<link rel="stylesheet" href="assets/js/leaflet/leaflet.css" />
+	<!--[if lte IE 8]><link rel="stylesheet" href="<path_to_dist>/leaflet.ie.css" /><![endif]-->
+	
+	<script src="assets/js/jquery-1.7.1.min.js"></script> 
+	<script src="assets/js/leaflet/leaflet.js"></script>
+	<script src="assets/js/blfm.js"></script>
+	<script>
+		$(document).ready(function() {
+			BL.init('map');
+		});
+	</script>
+</head>
 <body>
-Hello World!
+	<div id="map" style="height: 400px"></div>
 </body>
 </html>
