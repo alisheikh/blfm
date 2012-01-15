@@ -1,0 +1,44 @@
+[Config]
+Compilator.SaveAll=0
+Compilator.Capture=0
+Compilator.HideOutput=0
+Compilator.LogType=0
+DefaultCPIndex=0
+LogtoEnd=1
+DontOpen=0
+AbsolutePath=0
+FileFormat=0
+ProjectFilesOnly=0
+[Project tree]
+blfm
+	+Folder
+		..\..\index.html
+		blfm.js
+[Open project files]
+0=..\..\index.html
+1=blfm.js
+2=leaflet\leaflet.js
+3=leaflet\leaflet-src.js
+4=..\css\style.css
+5=leaflet\leaflet.css
+[Selected Project Files]
+Main=
+Selected=..\..\index.html
+[..\..\index.html]
+TopLine=6
+Caret=92,16
+[blfm.js]
+TopLine=53
+Caret=60,77
+[leaflet\leaflet.js]
+TopLine=1
+Caret=31,6
+[leaflet\leaflet-src.js]
+TopLine=2656
+Caret=18,2672
+[..\css\style.css]
+TopLine=1
+Caret=2,7
+[leaflet\leaflet.css]
+TopLine=1
+Caret=1,1
