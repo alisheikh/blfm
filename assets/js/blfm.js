@@ -5,7 +5,7 @@ $(document).ready(function() {
 var BL = (function () {
     var map;
     function init_map(map_div_id) {
-		var map = new L.Map(map_div_id);
+		map = new L.Map(map_div_id);
 		
 		var tileUrl =
 			'http://otile1.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.jpg';
@@ -19,56 +19,10 @@ var BL = (function () {
 		        attribution: tileAttrib,
 		    }
 		);
-		map.addLayer(tiles);
-		                
-		map.on('locationfound', onLocationFound);
-		map.on('locationerror', onLocationError);
-		
-		map.locateAndSetView(16);
-		
-		function onLocationFound(e) {
-			var radius = e.accuracy / 2;
-
-			var marker = new L.Marker(e.latlng);
-			map.addLayer(marker);
-			marker.bindPopup("You are within " + radius + " meters from this point").openPopup();
-			
-			var circle = new L.Circle(e.latlng, radius);
-			map.addLayer(circle);
-		}
-		
-		function onLocationError(e) {
-			alert(e.message);
-		}
-		
-		//map.setView(new L.LatLng(0,0), 13).addLayer(tiles);
+		map.addLayer(tiles);    
+		map.setView(16);
+		               
 		/*
-		var markerLocation = new L.LatLng(51.5, -0.09),
-			marker = new L.Marker(markerLocation);
-		
-		map.addLayer(marker);
-		marker.bindPopup("<b>Hello world!</b><br />I am a popup.").openPopup();
-		
-		
-		var circleLocation = new L.LatLng(51.508, -0.11),
-			circleOptions = {color: '#f03', opacity: 0.7},
-			circle = new L.Circle(circleLocation, 500, circleOptions);
-		
-		circle.bindPopup("I am a circle.");
-		map.addLayer(circle);
-		
-		
-		var p1 = new L.LatLng(51.509, -0.08),
-			p2 = new L.LatLng(51.503, -0.06),
-			p3 = new L.LatLng(51.51, -0.047),
-			polygonPoints = [p1, p2, p3],
-			polygon = new L.Polygon(polygonPoints);
-		
-		polygon.bindPopup("I am a polygon.");
-		map.addLayer(polygon);
-		*/
-		
-		
 		map.on('click', onMapClick);
 		
 		var popup = new L.Popup();
@@ -80,13 +34,51 @@ var BL = (function () {
 			popup.setContent("You clicked the map at " + latlngStr);
 			map.openPopup(popup);
 		}
-		
+		*/
 	}
 	
 	return {
 		init : function(map_div_id) {
-	        map = init_map(map_div_id);
-	        return;
+	        init_map(map_div_id);
+	        return map;
+	    },
+	    
+		getBuilding : function(id,level) {  
+			$.get('http://107.21.236.253/building/'+id, function(response){
+				var center = response.nominal_location;
+				map.setView(new L.LatLng(center[0],center[1]),21);
+				
+				var polygonPoints = [];
+				for(var index in response.footprint_polygon[0]) {
+					if(index != response.footprint_polygon[0].length) {
+						var vertex = response.footprint_polygon[0][index];
+						polygonPoints.push(new L.LatLng(vertex[0], vertex[1]));
+					}
+				}
+				var polygon = new L.Polygon(polygonPoints,{fillOpacity: 0, stroke:false});
+			    /*polygon.on('click',function() {
+					polygon.setStyle({stroke:true});
+				});*/
+				polygon.bindPopup(response.name);
+				map.addLayer(polygon);
+				
+				$.get(
+	                'http://107.21.236.253/building/'+id+'/floor/'+level,
+	                function(data) {
+	                    floor = data;
+	                    var rfp_tile_url = 
+	                        floor.raster_floorplans[0].tile_url_format;
+	                    var tiles = new L.TileLayer(
+	                        rfp_tile_url, 
+	                        {maxZoom: 23, scheme: 'tms'}
+	                    );
+	                    map.addLayer(tiles);
+	
+	                    return;
+	                },
+	                'json'
+	            );
+			},'json');
 	    }
     };
 }());

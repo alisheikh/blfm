@@ -18,8 +18,10 @@
 
 		$(document).ready(function() {       
 			var svg = SVGSupport();
-			if(svg[0] || svg[1])
-				BL.init('map');    
+			if(svg[0] || svg[1]) {				
+				BL.init('map');
+				BL.getBuilding(91,12); //Bulding: 91, Level: 13
+			} 
 			else
 				$('#map').html('This site won\'t work for you');
 		});
