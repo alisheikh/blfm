@@ -96,10 +96,11 @@ var BL = (function () {
     }
 
     // make an api call
-    function call_api(method, endpoint, callback) {
+    function call_api(method, endpoint, callback, request_data) {
         $.ajax({
             url: BASE_URL + endpoint,
             type: method,
+            data: request_data,
             dataType: 'json',
             success: callback
         });
@@ -108,55 +109,98 @@ var BL = (function () {
 
     // Public stuff.
     return {
-        // buildings
-        create_building: function(name, address, footprint) {},
+        // buildings /////////////////////////////////////////////////////////
+        // create
+        create_building: function(name, address, footprint, callback) {
+            data = {
+                name: name,
+                address: address,
+                footprint: footprint
+            };
+            call_api('PUT', building_endpoint(), callback, data);
+            return;
+        },
+        // read
         read_building: function(b, callback) {
             call_api('GET', building_endpoint(b), callback);
             return;
         },
-        list_buildings: function() {},
-        update_building: function(b, name, address, footprint) {},
-        delete_building: function(b) {},
+        // list
+        list_buildings: function(callback) {},
+        // update
+        update_building: function(b, name, address, footprint, callback) {},
+        // delete
+        delete_building: function(b, callback) {},
 
-        // floors
-        create_floor: function(b, level, name) {},
+        // floors ////////////////////////////////////////////////////////////
+        // create
+        create_floor: function(b, level, name, callback) {
+            data = {
+                level: level,
+                name: name
+            };
+            call_api('PUT', floor_endpoint(b), callback, data);
+            return;
+        },
+        // read
         read_floor: function(b, l, callback) {
             call_api('GET', floor_endpoint(b,l), callback);
             return;
         },
-        list_floors: function(b) {},
-        update_floor: function(b, l, level, name) {},
-        delete_floor: function(b, l) {},
+        // update
+        update_floor: function(b, l, level, name, callback) {},
+        // delete
+        delete_floor: function(b, l, callback) {},
 
-        // rasterplans
-        create_rasterplan: function(b, l, r, upload_token, gcps) {},
+        // rasterplans ///////////////////////////////////////////////////////
+        // create
+        create_rasterplan: function(b, l, r, upload_token, gcps, callback) {
+            data = {
+                upload_token: upload_token,
+                gcps: gcps
+            };
+            call_api('PUT', rfp_endpoint(b,l), callback, data);
+        },
+        // read
         read_rasterplan: function(b, l, r, callback) {
             call_api('GET', rfp_endpoint(b,l,r), callback);
             return;
         },
-        list_rasterplans: function(b, l) {},
-        update_rasterplan: function(b, l, r, upload_token, gcps) {},
-        delete_rasterplan: function(b, l, r) {},
+        // update
+        update_rasterplan: function(b, l, r, upload_token, gcps, callback) {},
+        // delete
+        delete_rasterplan: function(b, l, r, callback) {},
 
-        // vectorplans
-        create_vectorplan: function(b, l) {},
+        // vectorplans ///////////////////////////////////////////////////////
+        // create
+        create_vectorplan: function(b, l, callback) {
+            data = {};
+            call_api('PUT', vfp_endpoint(b,l), callback, data);
+        },
+        // read
         read_vectorplan: function(b, l, callback) {
             call_api('GET', vfp_endpoint(b, l), callback);
             return;
         },
-        update_vectorplan: function(b, l) {},
-        delete_vectorplan: function(b, l) {},
+        // update
+        update_vectorplan: function(b, l, callback) {},
+        // delete
+        delete_vectorplan: function(b, l, callback) {},
 
-        // vectorplan geometry
+        // vectorplan geometry ///////////////////////////////////////////////
+        // create
         create_geometry: function(b, l, polygon) {},
+        // read
         read_geometry: function(b, l, g, callback) {
             call_api('GET', geometry_endpoint(b, l, g), callback);
             return;
         },
+        // update
         update_geometry: function(b, l, g, polygon) {},
+        // delete
         delete_geometry: function(b, l, g) {},
 
-        // feature-layer
+        // feature-layer /////////////////////////////////////////////////////
         create_feature_layer: function(b, l, sort_value, name) {},
         read_feature_layer: function(b, l, f, callback) {
             call_api('GET', feature_layer_endpoint(b, l, f), callback);
@@ -165,7 +209,7 @@ var BL = (function () {
         update_feature_layer: function(b, l , f, sort_value, name) {},
         delete_feature_layer: function(b, l, f) {},
 
-        // features
+        // features //////////////////////////////////////////////////////////
         create_feature: function(b, l, f, name, geometry) {},
         read_feature: function(b, l, f, e, callback) {
             call_api('GET', feature_endpoint(b,l,f,e), callback);
@@ -174,7 +218,7 @@ var BL = (function () {
         update_feature: function(b, l, f, e, name, geometry) {},
         delete_feature: function(b, l, f, e) {},
 
-        // tags
+        // tags //////////////////////////////////////////////////////////////
         create_tag: function(tag, object_type, object_id) {},
         read_tag: function(t, callback) {
             call_api('GET', tag_endpoint(t), callback);
@@ -183,7 +227,7 @@ var BL = (function () {
         update_tag: function(t, tag, object_type, object_id) {},
         delete_tag: function(t) {},
 
-        // attributes
+        // attributes ////////////////////////////////////////////////////////
         create_attribute: function(t, name, value) {},
         read_attribute: function(t, a, callback) {
             call_api('GET', attribute_endpoint(t,a), callback);
@@ -192,56 +236,9 @@ var BL = (function () {
         update_attribute: function(t, a, name, value) {},
         delete_attribute: function(t, a) {},
 
-        // upload
+        // upload ////////////////////////////////////////////////////////////
         upload_file: function() {},
 
-        /**
-         * Initialize the map.
-         */
-        init: function(map_div_id, building_id, level) {
-            // init map
-            map = init_map(map_div_id);
-
-            // get the building object
-            building_endpoint = generate_building_endpoint(building_id);
-            $.get(
-                building_endpoint, 
-                function(data) {
-                    building = data;
-                    var building_latlng = 
-                        api_latlng(building.nominal_location);
-                    var footprint_poly = 
-                        api_polygon(building.footprint_polygon);
-
-                    map.setView(building_latlng, 18);
-                    map.addLayer(footprint_poly);
-                    return;
-                },
-                'json'
-            );
-
-            // get the floor object
-            floor_endpoint = generate_floor_endpoint(building_id, level);
-            $.get(
-                floor_endpoint,
-                function(data) {
-                    floor = data;
-                    var rfp_tile_url = 
-                        floor.raster_floorplans[0].tile_url_format;
-                    var tiles = new L.TileLayer(
-                        rfp_tile_url, 
-                        {maxZoom: 19, scheme: 'tms'}
-                    );
-                    map.addLayer(tiles);
-
-                    return;
-                },
-                'json'
-            );
-
-            
-            return;
-        }
     };
 }());
 
