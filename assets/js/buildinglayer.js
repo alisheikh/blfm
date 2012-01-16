@@ -13,7 +13,7 @@ var BL = (function () {
 
     // default parameter if it's undefined.
     function default_param(passed_value, default_value) {
-        if (pased_value !== undefined) {
+        if (passed_value !== undefined) {
             return passed_value;
         } else {
             return default_value;
