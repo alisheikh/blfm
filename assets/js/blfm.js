@@ -22,7 +22,7 @@ var BLFM = (function () {
 		map.addLayer(tiles);    
 		map.setView(18);
 		               
-		map.on('click', onMapClick);
+		/*map.on('click', onMapClick);
 		
 		var popup = new L.Popup();
 				
@@ -32,7 +32,7 @@ var BLFM = (function () {
 			popup.setLatLng(e.latlng);
 			popup.setContent("You clicked the map at " + latlngStr);
 			map.openPopup(popup);
-		}
+		}*/
 	}
 	
 	return {
@@ -46,7 +46,14 @@ var BLFM = (function () {
 				var polygon = BL_Leaflet.to_polygon(building.footprint_polygon);
 				polygon.setStyle({fillOpacity: 0, stroke: false});
 				polygon.bindPopup(building.name);
-				map.addLayer(polygon);			
+				map.addLayer(polygon);
+				
+	            BL.read_feature_layer(id, level, 6, function(feature_layer) {
+	            	var polygon = BL_Leaflet.to_polygon(feature_layer.features[0].geometry.coordinates);
+					polygon.setStyle({fillOpacity: 0, stroke: false});
+					polygon.bindPopup(feature_layer.features[0].name);
+					map.addLayer(polygon);			
+				});			
 			});  
 			
 			BL.read_floor(id, level, function(floor) {
@@ -58,13 +65,6 @@ var BLFM = (function () {
                 );
                 map.addLayer(tiles);
             });
-            
-            BL.read_feature_layer(id, level, 6, function(feature_layer) {
-            	var polygon = BL_Leaflet.to_polygon(feature_layer.features[0].geometry.coordinates);
-				polygon.setStyle({fillOpacity: 0, stroke: false});
-				polygon.bindPopup(feature_layer.features[0].name);
-				map.addLayer(polygon);			
-			});
 	    }
     };
 }());
