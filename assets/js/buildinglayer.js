@@ -30,7 +30,7 @@ var BL = (function () {
     function floor_endpoint(building_id, level) {
         b = building_id;
         l = default_param(level, '');
-        return '/building/' + b + '/level/' + l;
+        return '/building/' + b + '/floor/' + l;
     }
 
     // rasterplan endpoint url
@@ -268,10 +268,13 @@ var BL_Leaflet = (function () {
          * holes.)
          */
         to_polygon: function(api_poly) {
-            var perimeter = api_poly[0];
-            var latlngs = [];
-            for (var i=0; i<perimeter.length-1; i++) {
-                latlngs.push(api_latlng(perimeter[i]));
+        	var polygonArray = [];
+        	for(var arrayIndex in api_poly) {
+	            var latlngs = [];
+	            for (var index in api_poly[arrayIndex]) {
+	                latlngs.push(BL_Leaflet.to_latlng(api_poly[arrayIndex][index]));
+	            }
+	            polygonArray.push(latlngs);
             }
 
             return new L.Polygon(latlngs);
