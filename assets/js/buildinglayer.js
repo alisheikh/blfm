@@ -7,7 +7,7 @@ $(document).ready(function() {
 /*****************************************************************************
  * BuildingLayer namespace.
  */
-var com.buildinglayer.api = (function () {
+var BL = (function () {
     // The base url of the server.
     var BASE_URL = 'http://107.21.236.253';
 
@@ -157,7 +157,7 @@ var com.buildinglayer.api = (function () {
         delete_geometry: function(b, l, g) {},
 
         // feature-layer
-        create_feature_layer: function(b, l, sort_value, name),
+        create_feature_layer: function(b, l, sort_value, name) {},
         read_feature_layer: function(b, l, f, callback) {
             call_api('GET', feature_layer_endpoint(b, l, f), callback);
             return;
@@ -248,7 +248,7 @@ var com.buildinglayer.api = (function () {
 /******************************************************************************
  * BuildingLayer helper functions for using LeafletJS.
  */
-var com.buildinglayer.api.leaflet = (function () {
+var BL_Leaflet = (function () {
     return {
         /**
          * Returns a leaflet LatLng object representing the location given by
@@ -260,7 +260,7 @@ var com.buildinglayer.api.leaflet = (function () {
                 api_location[1],
                 api_location[0]
             );
-        }
+        },
 
         /**
          * Returns a leaflet polygon object represending the polygon given by
