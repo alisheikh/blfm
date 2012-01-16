@@ -35,6 +35,16 @@ var BLFM = (function () {
 		}*/
 	}
 	
+	function makeFeaturePolygon(feature) {
+		var polygon = BL_Leaflet.to_polygon(feature.geometry.coordinates);
+		polygon.setStyle({fillOpacity: 0});   
+		//polygon.bindPopup(feature.name);
+		polygon.on('click', function() {
+			$('#overlay #title').html(feature.name);
+		});
+		return polygon;
+	}
+	
 	return {
 		init : function(map_div_id) {
 	        init_map(map_div_id);
@@ -42,17 +52,21 @@ var BLFM = (function () {
 	    
 		getBuilding : function(id,level) {
 			BL.read_building(id, function(building) {
-				map.setView(BL_Leaflet.to_latlng(building.nominal_location), 18);
-				var polygon = BL_Leaflet.to_polygon(building.footprint_polygon);
-				polygon.setStyle({fillOpacity: 0, stroke: false});
-				polygon.bindPopup(building.name);
-				map.addLayer(polygon);
+				map.setView(BL_Leaflet.to_latlng(building.nominal_location), 23);
+				//var polygon = BL_Leaflet.to_polygon(building.footprint_polygon);
+				//polygon.setStyle({fillOpacity: 0, stroke: false});
+				//polygon.bindPopup(building.name);
+				//map.addLayer(polygon);
 				
-	            BL.read_feature_layer(id, level, 6, function(feature_layer) {
-	            	var polygon = BL_Leaflet.to_polygon(feature_layer.features[0].geometry.coordinates);
-					polygon.setStyle({fillOpacity: 0, stroke: false});
-					polygon.bindPopup(feature_layer.features[0].name);
-					map.addLayer(polygon);			
+	            BL.read_feature_layer(id, level, 6, function(feature_layer) {        
+	            	//for(var index in feature_layer.features) {
+	            	for(var index=feature_layer.features.length-1; index >= 0; index--) {
+	            		var feature = feature_layer.features[index];
+	            		//if(feature.id != 15) {
+			            	var polygon = makeFeaturePolygon(feature);
+							map.addLayer(polygon);
+						//}			
+					}
 				});			
 			});  
 			
