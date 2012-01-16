@@ -27,7 +27,7 @@ var BLFM = (function () {
 		var popup = new L.Popup();
 				
 		function onMapClick(e) {
-			var latlngStr = '(' + e.latlng.lat + ', ' + e.latlng.lng + ')';
+			var latlngStr = '(' + e.latlng.lng + ', ' + e.latlng.lat + ')';
 			
 			popup.setLatLng(e.latlng);
 			popup.setContent("You clicked the map at " + latlngStr);
@@ -41,10 +41,11 @@ var BLFM = (function () {
 	    },
 	    
 		getBuilding : function(id,level) {
-			BL.read_building(id, function(response) {
-				map.setView(BL_Leaflet.to_latlng(response.nominal_location), 18);
-				var polygon = BL_Leaflet.to_polygon(response.footprint_polygon);
-				polygon.setStyle({fillOpacity: 0});
+			BL.read_building(id, function(building) {
+				map.setView(BL_Leaflet.to_latlng(building.nominal_location), 18);
+				var polygon = BL_Leaflet.to_polygon(building.footprint_polygon);
+				polygon.setStyle({fillOpacity: 0, stroke: false});
+				polygon.bindPopup(building.name);
 				map.addLayer(polygon);			
 			});  
 			
@@ -57,6 +58,13 @@ var BLFM = (function () {
                 );
                 map.addLayer(tiles);
             });
+            
+            BL.read_feature_layer(id, level, 6, function(feature_layer) {
+            	var polygon = BL_Leaflet.to_polygon(feature_layer.features[0].geometry.coordinates);
+				polygon.setStyle({fillOpacity: 0, stroke: false});
+				polygon.bindPopup(feature_layer.features[0].name);
+				map.addLayer(polygon);			
+			});
 	    }
     };
 }());
